@@ -36,30 +36,41 @@ if __name__=='__main__':
     y = pd.Series(california_housing.target)
 
     # Adding the features for the visual
+
+    ### DECIDE WHICH TWO THINGS TO USE, MAYBE AVG ROOMS AND HOUSE AGE???
+    # https://inria.github.io/scikit-learn-mooc/python_scripts/datasets_california_housing.html
     X = X[['MedInc', 'AveBedrms']]
 
     # Splitting the data between training (25%) and testing (75%)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=1)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.99, random_state=1)
 
     # Actually train the model
     model.fit(X_train, y_train)
 
     # Make a prediction?
     y_pred = model.predict(X_test)
+    for pred in y_pred:
+        print(pred)
+    print(y_test)
 
     # Creating the graph
     fig = plt.figure(figsize=(10, 7))
     ax = fig.add_subplot(111, projection='3d')
 
-    ax.scatter(X_test['MedInc'], X_test['AveBedrms'], y_test, color='blue', label='Actual Data')
+    # Plotting the training data in orange and prediction data in blue
+    ax.scatter(X_test['MedInc'], X_test['AveBedrms'], y_pred, color='blue', label='Actual Data')
+    ax.scatter(X_train['MedInc'], X_train['AveBedrms'], y_train, color='orange', label='Training Data')
 
-    x1_range = np.linspace(X_test['MedInc'].min(), X_test['MedInc'].max(), 100)
-    x2_range = np.linspace(X_test['AveBedrms'].min(), X_test['AveBedrms'].max(), 100)
-    x1, x2 = np.meshgrid(x1_range, x2_range)
+    # Getting the range of x values for the line of best fit
+    #x1_range = np.linspace(X_test['MedInc'].min(), X_test['MedInc'].max(), 100)
+    #x2_range = np.linspace(X_test['AveBedrms'].min(), X_test['AveBedrms'].max(), 100)
+    #x1, x2 = np.meshgrid(x1_range, x2_range)
 
-    z = model.predict(np.c_[x1.ravel(), x2.ravel()]).reshape(x1.shape)
+    # Creating a z axis for the line of best fit
+    #z = model.predict(np.c_[x1.ravel(), x2.ravel()]).reshape(x1.shape)
 
-    ax.plot_surface(x1, x2, z, color='orange', alpha=0.5, rstride=100, cstride=100)
+    # Draw the line of best fit
+    #ax.plot_surface(x1, x2, z, color='orange', alpha=0.5, rstride=100, cstride=100)
 
     ax.set_xlabel('Median Income')
     ax.set_ylabel('Average Bedrooms')

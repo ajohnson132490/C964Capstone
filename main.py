@@ -136,5 +136,6 @@ if __name__=='__main__':
 
     
     ax.set_title('Multiple Linear Regression Best Fit Line (3D)')
-
+    plt.savefig("output.jpg", dpi=300)
     plt.show()
+

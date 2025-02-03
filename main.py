@@ -5,26 +5,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 
- 
-# Flask constructor
-app = Flask(__name__)   
- 
-# A decorator used to tell the application
-# which URL is associated function
-@app.route('/', methods =["GET", "POST"])
-def index():
-    if request.method == "POST":
-        # getting input with name = fname in HTML form
-        first_name = request.form.get("fname")
-        # getting input with name = lname in HTML form 
-        last_name = request.form.get("lname") 
-        return last_name + ", " + first_name
-
-    return render_template("index.html")
-
-def xAxisToInt(xAxis):
-    # Hard code the list to map translation of the towns and types
-    townDict = {'Branford': 1, 'Trumbull': 2, 'Madison': 3, 'East Granby': 4, 'Simsbury': 5, 'Bridgewater': 6, 'Beacon Falls': 7, 'Sterling': 8,
+# Universal town and type dictionaries
+townDict = {'Branford': 1, 'Trumbull': 2, 'Madison': 3, 'East Granby': 4, 'Simsbury': 5, 'Bridgewater': 6, 'Beacon Falls': 7, 'Sterling': 8,
                  'Groton': 9, 'Waterford': 10, 'Glastonbury': 11, 'Canton': 12, 'Woodstock': 13, 'Putnam': 14, 'Shelton': 15, 'Ansonia': 16,
                    'Plymouth': 17, 'Avon': 18, 'Canaan': 19, 'Morris': 20, 'Willington': 21, 'North Haven': 22, 'Columbia': 23, 'Thomaston': 24,
                      'Manchester': 25, 'Easton': 26, 'Norfolk': 27, 'Durham': 28, 'Middlebury': 29, 'Chaplin': 30, 'Lisbon': 31, 'East Hampton': 32,
@@ -48,8 +30,24 @@ def xAxisToInt(xAxis):
                                                          'Ridgefield': 143, 'Thompson': 144, 'Guilford': 145, 'Milford': 146, 'Norwalk': 147,
                                                            'New Haven': 148, 'East Haddam': 149, 'Bristol': 150, 'Montville': 151, 'Barkhamsted': 152,
                                                              'Wethersfield': 153, 'Windsor': 154}
-    typeDict = {'Single Family': 1, 'Two Family' : 2, 'Three Family' : 3, 'Four Family' : 4, 'Condo' : 5, np.nan: 6}
-    
+typeDict = {'Single Family': 1, 'Two Family' : 2, 'Three Family' : 3, 'Four Family' : 4, 'Condo' : 5, np.nan: 6}
+inputTown = 0
+inputType = 0
+# Flask constructor
+app = Flask(__name__)   
+ 
+# A decorator used to tell the application
+# which URL is associated function
+@app.route('/', methods =["GET", "POST"])
+def index():
+    if request.method == "POST":
+        # getting input with name = fname in HTML form
+        inputTown = int(request.form.get("town"))
+        # getting input with name = lname in HTML form 
+        inputType = int(request.form.get("type"))
+    return render_template("index.html")
+
+def xAxisToInt(xAxis):
     # Create lists for the output
     townList = []
     typeList = []
@@ -63,9 +61,7 @@ def xAxisToInt(xAxis):
 
     return pd.DataFrame({'Town': townList, 'Type': typeList})
 
-if __name__=='__main__':
-    #app.run()
-    
+if __name__=='__main__':    
     # Create the model
     model = LinearRegression()
 
@@ -88,7 +84,8 @@ if __name__=='__main__':
 
     # TODO: Get the data from the html form and use it as an input for newData
     # Make a prediction based on the user inputted town and residence type
-    newData = pd.DataFrame({'Town': [60,60,60,60], 'Type': [1,2,3,5]})
+    newData = pd.DataFrame({'Town': [inputTown], 'Type': [inputType]})
+    print(newData)
     y_pred = model.predict(newData)
 
 
@@ -109,10 +106,10 @@ if __name__=='__main__':
     ax.set_zticks(np.arange(0,5000000,500000))
 
     # Plotting the training data in orange and prediction data in blue
-    ax.scatter(xAxis['Town'], xAxis['Type'], yAxis, color='orange', label='Training Data')
+    #ax.scatter(xAxis['Town'], xAxis['Type'], yAxis, color='orange', label='Training Data')
     ax.scatter(newData['Town'], newData['Type'], y_pred, color='blue')
     
     # Outputting the graph
-    #plt.savefig("resources/output.jpg", dpi=300)
+    plt.savefig("resources/output.jpg", dpi=300)
     #plt.show()
-
+    app.run()

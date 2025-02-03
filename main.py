@@ -1,11 +1,13 @@
 # importing Flask and other modules
+import matplotlib
+matplotlib.use('Agg')
 from flask import Flask, request, render_template
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 
-# Universal town and type dictionaries
+# Global dictionaries
 townDict = {'Branford': 1, 'Trumbull': 2, 'Madison': 3, 'East Granby': 4, 'Simsbury': 5, 'Bridgewater': 6, 'Beacon Falls': 7, 'Sterling': 8,
                  'Groton': 9, 'Waterford': 10, 'Glastonbury': 11, 'Canton': 12, 'Woodstock': 13, 'Putnam': 14, 'Shelton': 15, 'Ansonia': 16,
                    'Plymouth': 17, 'Avon': 18, 'Canaan': 19, 'Morris': 20, 'Willington': 21, 'North Haven': 22, 'Columbia': 23, 'Thomaston': 24,
@@ -31,8 +33,13 @@ townDict = {'Branford': 1, 'Trumbull': 2, 'Madison': 3, 'East Granby': 4, 'Simsb
                                                            'New Haven': 148, 'East Haddam': 149, 'Bristol': 150, 'Montville': 151, 'Barkhamsted': 152,
                                                              'Wethersfield': 153, 'Windsor': 154}
 typeDict = {'Single Family': 1, 'Two Family' : 2, 'Three Family' : 3, 'Four Family' : 4, 'Condo' : 5, np.nan: 6}
-inputTown = 0
-inputType = 0
+
+# Globar variables 
+model = LinearRegression()
+ttData = pd.DataFrame()
+ttTrain = pd.DataFrame()
+sales = pd.DataFrame()
+
 # Flask constructor
 app = Flask(__name__)   
  
@@ -45,54 +52,34 @@ def index():
         inputTown = int(request.form.get("town"))
         # getting input with name = lname in HTML form 
         inputType = int(request.form.get("type"))
+        scatterPlot(inputTown, inputType)
+        pieChart(inputTown, inputType)
     return render_template("index.html")
 
-def xAxisToInt(xAxis):
+def ttDataToNums(ttData):
     # Create lists for the output
     townList = []
     typeList = []
 
     # Adding the key for every item into a list sequentially
-    for item in xAxis['Town']:
+    for item in ttData['Town']:
         townList.append(townDict[item])
     
-    for item in xAxis['Type']:
+    for item in ttData['Type']:
         typeList.append(typeDict[item])
 
     return pd.DataFrame({'Town': townList, 'Type': typeList})
 
-if __name__=='__main__':    
-    # Create the model
-    model = LinearRegression()
-
-    # Get the data from the csv
-    rawData = pd.read_csv("ConneticutResidentialSales2001-2022.csv")
-    townData = []
-    typeData = []
-    saleData = []
-
-    # Assign the data to the X and Z axis and formatting it for training
-    xAxis = pd.DataFrame({'Town': rawData["Town"], 'Type': rawData["Residential Type"]})
-    xAxis = xAxisToInt(xAxis)
-    xTrain = pd.DataFrame({'Town': list(xAxis['Town'].keys()), 'Type': list(xAxis['Type'].keys())})
-    
-    # Assign the target (home price) to the Y axis
-    yAxis = pd.Series(rawData["Sale Amount"])
-
-    # Training the model
-    model.fit(xTrain, yAxis)
-
-    # TODO: Get the data from the html form and use it as an input for newData
+def scatterPlot(inputTown, inputType):
     # Make a prediction based on the user inputted town and residence type
     newData = pd.DataFrame({'Town': [inputTown], 'Type': [inputType]})
-    print(newData)
     y_pred = model.predict(newData)
 
 
     # Creating the graph
     fig = plt.figure(figsize=(10, 7))
     ax = fig.add_subplot(111, projection='3d')
-    ax.set_title('Multiple Linear Regression Best Fit Line (3D)')
+    ax.set_title('Multiple Linear Regression')
 
     ax.set_xlabel('Town')
 
@@ -106,10 +93,60 @@ if __name__=='__main__':
     ax.set_zticks(np.arange(0,5000000,500000))
 
     # Plotting the training data in orange and prediction data in blue
-    #ax.scatter(xAxis['Town'], xAxis['Type'], yAxis, color='orange', label='Training Data')
+    ax.scatter(ttData['Town'], ttData['Type'], sales, color='orange', label='Training Data')
     ax.scatter(newData['Town'], newData['Type'], y_pred, color='blue')
     
     # Outputting the graph
-    plt.savefig("resources/output.jpg", dpi=300)
+    plt.savefig("static/output.jpg", dpi=300)
     #plt.show()
-    app.run()
+  
+def pieChart(inputTown, inputType):
+    # Creating the graph
+    fig = plt.figure(figsize=(20, 14))
+    ax = fig.add_subplot(111,)
+    ax.set_title('Most Frequently Sold Home Type in Submitted Town')
+
+    # Getting the data for the town submitted
+    homesInTown = []
+    for index, row in ttData.iterrows():
+        if (row['Town'] == inputTown):
+            print("Town Selected: ", row['Town'], "Type: ", row['Type'])
+            homesInTown.append(row['Type'])
+    # Plotting the training data in orange and prediction data in blue
+    labelNums, data = np.unique(homesInTown, return_counts=True)
+    label=[]
+    for i in labelNums:
+        if i == 1:
+          label.append('Single Family')
+        elif i == 2:
+          label.append('Two Family')
+        elif i == 3:
+          label.append('Three Family')
+        elif i == 4:
+          label.append('Four Family')
+        elif i == 5:
+          label.append('Condo')
+        elif i == 6:
+          label.append('Other')
+
+    print("Labels: ", label, "\nData: ", data)
+    ax.pie(data, labels=label)
+    
+    # Outputting the graph
+    plt.savefig("static/pie.jpg", dpi=300)
+    #plt.show()
+
+if __name__=='__main__':
+  # Get the data from the csv
+  rawData = pd.read_csv("ConneticutResidentialSales2001-2022.csv")
+
+  # Assign the data to the X and Z axis and formatting it for training
+  ttData = ttDataToNums(pd.DataFrame({'Town': rawData["Town"], 'Type': rawData["Residential Type"]}))
+  ttTrain = pd.DataFrame({'Town': list(ttData['Town'].keys()), 'Type': list(ttData['Type'].keys())})
+  
+  # Assign the target (home price) to the Y axis
+  sales = pd.Series(rawData["Sale Amount"])
+
+  # Training the model
+  model.fit(ttTrain, sales)    
+  app.run()

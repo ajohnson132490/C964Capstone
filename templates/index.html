@@ -4,7 +4,7 @@
 <html>
     <head>
         <title>Page Title</title>
-        <link rel="stylesheet" href="../resources/styles.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='../static/styles.css') }}">
     </head>
     <body>
         <div class="header"><h1>PricePoint</h1></div>
@@ -195,9 +195,9 @@
                 value="$0" readonly>
                 <div style="display:flex;">
                     <button style="background-color: inherit; border: none;" onclick="plusDivs(-1)">&#10094;</button>
-                    <img src="../resources/output.jpg" class="graphs">
+                    <img src="../static/output.jpg" class="graphs">
                     <img src="" class="graphs">
-                    <img src="../resources/output.jpg" class="graphs">
+                    <img src="../static/output.jpg" class="graphs">
                     <button style="background-color: inherit; border: none;" onclick="plusDivs(1)">&#10095;</button>
                 </div>                    
             </div>

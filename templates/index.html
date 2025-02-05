@@ -191,13 +191,15 @@
             </div>
             <div class="right">
                 <h1>Est. Home Price:</h1>
-                <input style="margin-left:3em; min-height: 1.5em; max-width: 5.125em; font-size: 50px;" 
-                value="$0" readonly>
+                
+                <input style="margin-left:3em; min-height: 1.5em; max-width: 5.25em; font-size: 50px;" 
+                value={{val}} readonly>
                 <div style="display:flex;">
                     <button style="background-color: inherit; border: none;" onclick="plusDivs(-1)">&#10094;</button>
-                    <img src="../static/output.jpg" class="graphs">
+                    <img src="../static/scatter.jpg" class="graphs">
+                    <img src="../static/prediction.jpg" class="graphs">
                     <img src="../static/pie.jpg" class="graphs">
-                    <img src="../static/output.jpg" class="graphs">
+                    <img src="../static/hist.jpg" class="graphs">
                     <button style="background-color: inherit; border: none;" onclick="plusDivs(1)">&#10095;</button>
                 </div>                    
             </div>

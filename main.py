@@ -47,14 +47,16 @@ app = Flask(__name__)
 # which URL is associated function
 @app.route('/', methods =["GET", "POST"])
 def index():
+    value = 0
     if request.method == "POST":
         # getting input with name = fname in HTML form
         inputTown = int(request.form.get("town"))
         # getting input with name = lname in HTML form 
         inputType = int(request.form.get("type"))
-        scatterPlot(inputTown, inputType)
-        pieChart(inputTown, inputType)
-    return render_template("index.html")
+        value = float(scatterPlot(inputTown, inputType)[0])
+        pieChart(inputTown)
+        histogram(inputTown, inputType)
+    return render_template("index.html", val="$" + str(value))
 
 def ttDataToNums(ttData):
     # Create lists for the output
@@ -75,34 +77,39 @@ def scatterPlot(inputTown, inputType):
     newData = pd.DataFrame({'Town': [inputTown], 'Type': [inputType]})
     y_pred = model.predict(newData)
 
-
     # Creating the graph
     fig = plt.figure(figsize=(10, 7))
     ax = fig.add_subplot(111, projection='3d')
     ax.set_title('Multiple Linear Regression')
 
     ax.set_xlabel('Town')
+    ax.set_xlim([1.0, 160.0])
 
     ax.set_ylabel('Type', labelpad=40)
     ax.set_yticks([1,2,3,4,5,6,7])
+    ax.set_ylim([1.0, 7.0])
     ax.set_yticklabels(['Single Family', 'Two Family', 'Three Family', 'Four Family', 'Condo', 'Other', ''])
     ax.tick_params(axis='y', rotation=270)
 
     ax.set_zlabel('House Price')
-    ax.set_zlim(0,5000000)
-    ax.set_zticks(np.arange(0,5000000,500000))
+    ax.set_zlim(0,5500000)
+    ax.set_zticks(np.arange(0,5500000,500000))
 
-    # Plotting the training data in orange and prediction data in blue
-    ax.scatter(ttData['Town'], ttData['Type'], sales, color='orange', label='Training Data')
+    # Plotting the prediction data
     ax.scatter(newData['Town'], newData['Type'], y_pred, color='blue')
-    
+    plt.savefig("static/prediction.jpg", dpi=300)
+
+    # Plotting the training data
+    ax.scatter(ttData['Town'], ttData['Type'], sales, color='orange')
+
     # Outputting the graph
-    plt.savefig("static/output.jpg", dpi=300)
-    #plt.show()
+    plt.savefig("static/scatter.jpg", dpi=300)
+
+    return y_pred
   
-def pieChart(inputTown, inputType):
+def pieChart(inputTown):
     # Creating the graph
-    fig = plt.figure(figsize=(20, 14))
+    fig = plt.figure(figsize=(10, 7))
     ax = fig.add_subplot(111,)
     ax.set_title('Most Frequently Sold Home Type in Submitted Town')
 
@@ -110,9 +117,9 @@ def pieChart(inputTown, inputType):
     homesInTown = []
     for index, row in ttData.iterrows():
         if (row['Town'] == inputTown):
-            print("Town Selected: ", row['Town'], "Type: ", row['Type'])
             homesInTown.append(row['Type'])
-    # Plotting the training data in orange and prediction data in blue
+    
+    # Formatting and Plotting the data 
     labelNums, data = np.unique(homesInTown, return_counts=True)
     label=[]
     for i in labelNums:
@@ -129,12 +136,35 @@ def pieChart(inputTown, inputType):
         elif i == 6:
           label.append('Other')
 
-    print("Labels: ", label, "\nData: ", data)
     ax.pie(data, labels=label)
     
     # Outputting the graph
     plt.savefig("static/pie.jpg", dpi=300)
-    #plt.show()
+
+def histogram(inputTown, inputType):
+    # SHOWS THE NUMBER OF TIMES A HOME OF THE SELECTED TYPE HAS BEEN SOLD IN THIS TOWN
+    # Creating the graph
+    fig = plt.figure(figsize=(10, 7))
+    ax = fig.add_subplot(111)
+
+    # Creating an inverse dictionary for reverse lookup
+    tempTownDict = {v: k for k, v in townDict.items()}
+    tempTypeDict = {v: k for k, v in typeDict.items()}
+    if (inputType == 6):
+      ax.set_title("Other Homes Sold In " + str(tempTownDict[inputTown])) 
+    else:
+      ax.set_title(str(tempTypeDict[inputType]) + " Homes Sold In " + str(tempTownDict[inputTown]))
+
+    homesInTown = []
+    for index, row in ttData.iterrows():
+        if (row['Type'] == inputType):
+            homesInTown.append(row['Town'])
+
+    n, bins, bars = ax.hist(homesInTown, 154, color='orange')
+    bars[inputTown-1].set_facecolor('blue')
+    
+    # Outputting the graph
+    plt.savefig("static/hist.jpg", dpi=300)
 
 if __name__=='__main__':
   # Get the data from the csv
@@ -148,5 +178,5 @@ if __name__=='__main__':
   sales = pd.Series(rawData["Sale Amount"])
 
   # Training the model
-  model.fit(ttTrain, sales)    
+  model.fit(ttData, sales)    
   app.run()

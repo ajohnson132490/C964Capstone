@@ -48,6 +48,7 @@ app = Flask(__name__)
 @app.route('/', methods =["GET", "POST"])
 def index():
     value = 0
+    title = ""
     if request.method == "POST":
         # getting input with name = fname in HTML form
         inputTown = int(request.form.get("town"))
@@ -55,8 +56,8 @@ def index():
         inputType = int(request.form.get("type"))
         value = float(scatterPlot(inputTown, inputType)[0])
         pieChart(inputTown)
-        histogram(inputTown, inputType)
-    return render_template("index.html", val="$" + str(value))
+        title = histogram(inputTown, inputType)
+    return render_template("index.html", val="$" + str(value), header=title)
 
 def ttDataToNums(ttData):
     # Create lists for the output
@@ -165,7 +166,8 @@ def histogram(inputTown, inputType):
     
     # Outputting the graph
     plt.savefig("static/hist.jpg", dpi=300)
-
+    
+    return ax.get_title()
 if __name__=='__main__':
   # Get the data from the csv
   rawData = pd.read_csv("ConneticutResidentialSales2001-2022.csv")

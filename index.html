@@ -2,9 +2,233 @@
 <html>
     <head>
         <title>PricePoint Estimator</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='static/styles.css') }}">
     </head>
     <body>
-        <h1>Test</h1>
+        <div class="header">
+            <h1>PricePoint</h1>
+            {% if header != ""%}
+                {% block content%}
+                <h2 style="margin: auto auto;">Showing results for {{header}}</h2>
+                {% endblock %}
+            {% endif %}
+            </div>
+        <div style="display:flex">
+            <div class="left">
+            <form style="display:grid" action="{{ url_for("index")}}" method="post">
+                <label for="towninput">Town:</label>
+                <select style="max-width: fit-content;" id="towninput" name="town">
+                    <option value=1>Branford</option>
+                    <option value=2>Trumbull</option>
+                    <option value=3>Madison</option>
+                    <option value=4>East Granby</option>
+                    <option value=5>Simsbury</option>
+                    <option value=6>Bridgewater</option>
+                    <option value=7>Beacon Falls</option>
+                    <option value=8>Sterling</option>
+                    <option value=9>Groton</option>
+                    <option value=10>Waterford</option>
+                    <option value=11>Glastonbury</option>
+                    <option value=12>Canton</option>
+                    <option value=13>Woodstock</option>
+                    <option value=14>Putnam</option>
+                    <option value=15>Shelton</option>
+                    <option value=16>Ansonia</option>
+                    <option value=17>Plymouth</option>
+                    <option value=18>Avon</option>
+                    <option value=19>Canaan</option>
+                    <option value=20>Morris</option>
+                    <option value=21>Willington</option>
+                    <option value=22>North Haven</option>
+                    <option value=23>Columbia</option>
+                    <option value=24>Thomaston</option>
+                    <option value=25>Manchester</option>
+                    <option value=26>Easton</option>
+                    <option value=27>Norfolk</option>
+                    <option value=28>Durham</option>
+                    <option value=29>Middlebury</option>
+                    <option value=30>Chaplin</option>
+                    <option value=31>Lisbon</option>
+                    <option value=32>East Hampton</option>
+                    <option value=33>New London</option>
+                    <option value=34>Killingly</option>
+                    <option value=35>Kent</option>
+                    <option value=36>Hampton</option>
+                    <option value=37>Rocky Hill</option>
+                    <option value=38>Newington</option>
+                    <option value=39>Haddam</option>
+                    <option value=40>Hartland</option>
+                    <option value=41>Eastford</option>
+                    <option value=42>Mansfield</option>
+                    <option value=43>Cornwall</option>
+                    <option value=44>Warren</option>
+                    <option value=45>Windsor Locks</option>
+                    <option value=46>Ledyard</option>
+                    <option value=47>Sharon</option>
+                    <option value=48>New Fairfield</option>
+                    <option value=49>Somers</option>
+                    <option value=50>Woodbury</option>
+                    <option value=51>Burlington</option>
+                    <option value=52>Roxbury</option>
+                    <option value=53>Torrington</option>
+                    <option value=54>Brooklyn</option>
+                    <option value=55>Cromwell</option>
+                    <option value=56>Lebanon</option>
+                    <option value=57>Washington</option>
+                    <option value=58>Winchester</option>
+                    <option value=59>Andover</option>
+                    <option value=60>Salem</option>
+                    <option value=61>Ashford</option>
+                    <option value=62>Bethany</option>
+                    <option value=63>Middletown</option>
+                    <option value=64>Tolland</option>
+                    <option value=65>South Windsor</option>
+                    <option value=66>Coventry</option>
+                    <option value=67>Oxford</option>
+                    <option value=68>Norwich</option>
+                    <option value=69>Deep River</option>
+                    <option value=70>Wilton</option>
+                    <option value=71>Colchester</option>
+                    <option value=72>Berlin</option>
+                    <option value=73>Vernon</option>
+                    <option value=74>Canterbury</option>
+                    <option value=75>Monroe</option>
+                    <option value=76>Stamford</option>
+                    <option value=77>Plainfield</option>
+                    <option value=78>North Branford</option>
+                    <option value=79>Bethel</option>
+                    <option value=80>Granby</option>
+                    <option value=81>Hamden</option>
+                    <option value=82>Newtown</option>
+                    <option value=83>Wolcott</option>
+                    <option value=84>Stafford</option>
+                    <option value=85>Derby</option>
+                    <option value=86>Bridgeport</option>
+                    <option value=87>Wallingford</option>
+                    <option value=88>Westport</option>
+                    <option value=89>Portland</option>
+                    <option value=90>Killingworth</option>
+                    <option value=91>Danbury</option>
+                    <option value=92>Cheshire</option>
+                    <option value=93>Fairfield</option>
+                    <option value=94>Marlborough</option>
+                    <option value=95>New Canaan</option>
+                    <option value=96>Bozrah</option>
+                    <option value=97>West Hartford</option>
+                    <option value=98>Darien</option>
+                    <option value=99>Old Saybrook</option>
+                    <option value=100>Orange</option>
+                    <option value=101>East Haven</option>
+                    <option value=102>West Haven</option>
+                    <option value=103>Preston</option>
+                    <option value=104>Westbrook</option>
+                    <option value=105>Hartford</option>
+                    <option value=106>Meriden</option>
+                    <option value=107>Suffield</option>
+                    <option value=108>Plainville</option>
+                    <option value=109>New Britain</option>
+                    <option value=110>Hebron</option>
+                    <option value=111>Brookfield</option>
+                    <option value=112>East Windsor</option>
+                    <option value=113>Lyme</option>
+                    <option value=114>New Milford</option>
+                    <option value=115>East Hartford</option>
+                    <option value=116>Franklin</option>
+                    <option value=117>Bethlehem</option>
+                    <option value=118>Naugatuck</option>
+                    <option value=119>Essex</option>
+                    <option value=120>Enfield</option>
+                    <option value=121>Bolton</option>
+                    <option value=122>Harwinton</option>
+                    <option value=123>Stonington</option>
+                    <option value=124>Griswold</option>
+                    <option value=125>Watertown</option>
+                    <option value=126>Sherman</option>
+                    <option value=127>Bloomfield</option>
+                    <option value=128>Chester</option>
+                    <option value=129>Old Lyme</option>
+                    <option value=130>Southbury</option>
+                    <option value=131>Goshen</option>
+                    <option value=132>Farmington</option>
+                    <option value=133>Ellington</option>
+                    <option value=134>Clinton</option>
+                    <option value=135>Waterbury</option>
+                    <option value=136>New Hartford</option>
+                    <option value=137>Middlefield</option>
+                    <option value=138>Stratford</option>
+                    <option value=139>East Lyme</option>
+                    <option value=140>Colebrook</option>
+                    <option value=141>Litchfield</option>
+                    <option value=142>Greenwich</option>
+                    <option value=143>Ridgefield</option>
+                    <option value=144>Thompson</option>
+                    <option value=145>Guilford</option>
+                    <option value=146>Milford</option>
+                    <option value=147>Norwalk</option>
+                    <option value=148>New Haven</option>
+                    <option value=149>East Haddam</option>
+                    <option value=150>Bristol</option>
+                    <option value=151>Montville</option>
+                    <option value=152>Barkhamsted</option>
+                    <option value=153>Wethersfield</option>
+                    <option value=154>Windsor</option>
+                </select>
+                <br>
+                <label for="typeinput">Residence Type:</label>
+                <select style="max-width: fit-content;" id="typeinput" name="type">
+                    <option value="1">Single Family</option>
+                    <option value="2">Two Family</option>
+                    <option value="3">Three Family</option>
+                    <option value="4">Four Family</option>
+                    <option value="5">Condo</option>
+                    <option value="6">Other</option>
+                </select>
+                <br>
+                <button style="max-width: 5em;" type="submit">Submit</button>
+            </form>
+            <br>
+            <h2>Instructions For Use:</h2>
+            <p>Select the town where the home is. Select the type of home the home is.
+                Hit submit. List the home for the price shown on the right. See the
+                graphs below the price for a visualization of the data used to generate
+                that price.
+            </p>
+            </div>
+            <div class="right">
+                <h1>Est. Home Price:</h1>
+                
+                <input style="margin-left:3em; min-height: 1.5em; max-width: 5.25em; font-size: 50px;" 
+                value={{val}} readonly>
+                <div style="display:flex;">
+                    <button style="background-color: inherit; border: none;" onclick="plusDivs(-1)">&#10094;</button>
+                    <img src="static/scatter.jpg" class="graphs">
+                    <img src="static/prediction.jpg" class="graphs">
+                    <img src="static/pie.jpg" class="graphs">
+                    <img src="static/hist.jpg" class="graphs">
+                    <button style="background-color: inherit; border: none;" onclick="plusDivs(1)">&#10095;</button>
+                </div>                    
+            </div>
+        </div>
+
+        <script>
+            var slideIndex = 1;
+            showDivs(slideIndex);
+            
+            function plusDivs(n) {
+              showDivs(slideIndex += n);
+            }
+            
+            function showDivs(n) {
+              var i;
+              var x = document.getElementsByClassName("graphs");
+              if (n > x.length) {slideIndex = 1}
+              if (n < 1) {slideIndex = x.length}
+              for (i = 0; i < x.length; i++) {
+                x[i].style.display = "none";  
+              }
+              x[slideIndex-1].style.display = "block";  
+            }
+        </script>
 
     </body>
 </html>

@@ -54,9 +54,12 @@ def index():
         inputTown = int(request.form.get("town"))
         # getting input with name = lname in HTML form 
         inputType = int(request.form.get("type"))
-        value = float(scatterPlot(inputTown, inputType)[0])
-        pieChart(inputTown)
-        title = histogram(inputTown, inputType)
+        try:
+          value = float(scatterPlot(inputTown, inputType)[0])
+          pieChart(inputTown)
+          title = histogram(inputTown, inputType)
+        except:
+           print("Could not get variables")
     return render_template("index.html", val="$" + str(value), header=title)
 
 def ttDataToNums(ttData):
@@ -74,6 +77,19 @@ def ttDataToNums(ttData):
     return pd.DataFrame({'Town': townList, 'Type': typeList})
 
 def scatterPlot(inputTown, inputType):
+    # Get the data from the csv
+    rawData = pd.read_csv("ConneticutResidentialSales2001-2022.csv")
+
+    # Assign the data to the X and Z axis and formatting it for training
+    ttData = ttDataToNums(pd.DataFrame({'Town': rawData["Town"], 'Type': rawData["Residential Type"]}))
+    ttTrain = pd.DataFrame({'Town': list(ttData['Town'].keys()), 'Type': list(ttData['Type'].keys())})
+
+    # Assign the target (home price) to the Y axis
+    sales = pd.Series(rawData["Sale Amount"])
+
+    # Training the model
+    model.fit(ttData, sales)
+    
     # Make a prediction based on the user inputted town and residence type
     newData = pd.DataFrame({'Town': [inputTown], 'Type': [inputType]})
     y_pred = model.predict(newData)
@@ -168,17 +184,5 @@ def histogram(inputTown, inputType):
     plt.savefig("static/hist.jpg", dpi=300)
     
     return ax.get_title()
-if __name__=='__main__':
-  # Get the data from the csv
-  rawData = pd.read_csv("ConneticutResidentialSales2001-2022.csv")
-
-  # Assign the data to the X and Z axis and formatting it for training
-  ttData = ttDataToNums(pd.DataFrame({'Town': rawData["Town"], 'Type': rawData["Residential Type"]}))
-  ttTrain = pd.DataFrame({'Town': list(ttData['Town'].keys()), 'Type': list(ttData['Type'].keys())})
-  
-  # Assign the target (home price) to the Y axis
-  sales = pd.Series(rawData["Sale Amount"])
-
-  # Training the model
-  model.fit(ttData, sales)    
+if __name__=='__main__':    
   app.run(port=8080)

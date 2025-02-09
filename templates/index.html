@@ -201,10 +201,10 @@
                 value={{val}} readonly>
                 <div style="display:flex;">
                     <button style="background-color: inherit; border: none;" onclick="plusDivs(-1)">&#10094;</button>
-                    <img src="../static/scatter.jpg" class="graphs">
-                    <img src="../static/prediction.jpg" class="graphs">
-                    <img src="../static/pie.jpg" class="graphs">
-                    <img src="../static/hist.jpg" class="graphs">
+                    <img src="{{ url_for('static', filename='../static/scatter.jpg') }}" class="graphs">
+                    <img src="{{ url_for('static', filename='../static/prediction.jpg') }}" class="graphs">
+                    <img src="{{ url_for('static', filename='../static/pie.jpg') }}" class="graphs">
+                    <img src="{{ url_for('static', filename='../static/hist.jpg') }}" class="graphs">
                     <button style="background-color: inherit; border: none;" onclick="plusDivs(1)">&#10095;</button>
                 </div>                    
             </div>

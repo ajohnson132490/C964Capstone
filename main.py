@@ -34,15 +34,15 @@ townDict = {'Branford': 1, 'Trumbull': 2, 'Madison': 3, 'East Granby': 4, 'Simsb
                                                              'Wethersfield': 153, 'Windsor': 154}
 typeDict = {'Single Family': 1, 'Two Family' : 2, 'Three Family' : 3, 'Four Family' : 4, 'Condo' : 5, np.nan: 6}
 
-# Globar variables 
+# Global variables
 model = LinearRegression()
 ttData = pd.DataFrame()
 ttTrain = pd.DataFrame()
 sales = pd.DataFrame()
 
 # Flask constructor
-app = Flask(__name__)   
- 
+app = Flask(__name__)
+
 # A decorator used to tell the application
 # which URL is associated function
 @app.route('/', methods =["GET", "POST"])
@@ -52,7 +52,7 @@ def index():
     if request.method == "POST":
         # getting input with name = fname in HTML form
         inputTown = int(request.form.get("town"))
-        # getting input with name = lname in HTML form 
+        # getting input with name = lname in HTML form
         inputType = int(request.form.get("type"))
         try:
           value = float(scatterPlot(inputTown, inputType)[0])
@@ -60,7 +60,7 @@ def index():
           title = histogram(inputTown, inputType)
         except:
            print("Could not get variables")
-    return render_template("index.html", val="$" + str(round(value,2)), header=title)
+    return render_template("index.html", val="$" + str(round(value, 2)), header=title)
 
 def ttDataToNums(ttData):
     # Create lists for the output
@@ -70,7 +70,7 @@ def ttDataToNums(ttData):
     # Adding the key for every item into a list sequentially
     for item in ttData['Town']:
         townList.append(townDict[item])
-    
+
     for item in ttData['Type']:
         typeList.append(typeDict[item])
 
@@ -89,7 +89,7 @@ def scatterPlot(inputTown, inputType):
 
     # Training the model
     model.fit(ttData, sales)
-    
+
     # Make a prediction based on the user inputted town and residence type
     newData = pd.DataFrame({'Town': [inputTown], 'Type': [inputType]})
     y_pred = model.predict(newData)
@@ -123,7 +123,7 @@ def scatterPlot(inputTown, inputType):
     plt.savefig("static/scatter.jpg", dpi=300)
 
     return y_pred
-  
+
 def pieChart(inputTown):
     # Get the data from the csv
     rawData = pd.read_csv("ConneticutResidentialSales2001-2022.csv")
@@ -148,8 +148,8 @@ def pieChart(inputTown):
     for index, row in ttData.iterrows():
         if (row['Town'] == inputTown):
             homesInTown.append(row['Type'])
-    
-    # Formatting and Plotting the data 
+
+    # Formatting and Plotting the data
     labelNums, data = np.unique(homesInTown, return_counts=True)
     label=[]
     for i in labelNums:
@@ -167,7 +167,7 @@ def pieChart(inputTown):
           label.append('Other')
 
     ax.pie(data, labels=label)
-    
+
     # Outputting the graph
     plt.savefig("static/pie.jpg", dpi=300)
 
@@ -193,7 +193,7 @@ def histogram(inputTown, inputType):
     tempTownDict = {v: k for k, v in townDict.items()}
     tempTypeDict = {v: k for k, v in typeDict.items()}
     if (inputType == 6):
-      ax.set_title("Other Homes Sold In " + str(tempTownDict[inputTown])) 
+      ax.set_title("Other Homes Sold In " + str(tempTownDict[inputTown]))
     else:
       ax.set_title(str(tempTypeDict[inputType]) + " Homes Sold In " + str(tempTownDict[inputTown]))
 
@@ -204,10 +204,10 @@ def histogram(inputTown, inputType):
 
     n, bins, bars = ax.hist(homesInTown, 154, color='orange')
     bars[inputTown-1].set_facecolor('blue')
-    
+
     # Outputting the graph
     plt.savefig("static/hist.jpg", dpi=300)
-    
+
     return ax.get_title()
-if __name__=='__main__':    
+if __name__=='__main__':
   app.run(port=8080)

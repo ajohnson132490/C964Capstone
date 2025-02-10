@@ -60,7 +60,7 @@ def index():
           title = histogram(inputTown, inputType)
         except:
            print("Could not get variables")
-    return render_template("index.html", val="$" + str(value), header=title)
+    return render_template("index.html", val="$" + str(round(value,2)), header=title)
 
 def ttDataToNums(ttData):
     # Create lists for the output
@@ -125,6 +125,19 @@ def scatterPlot(inputTown, inputType):
     return y_pred
   
 def pieChart(inputTown):
+    # Get the data from the csv
+    rawData = pd.read_csv("ConneticutResidentialSales2001-2022.csv")
+
+    # Assign the data to the X and Z axis and formatting it for training
+    ttData = ttDataToNums(pd.DataFrame({'Town': rawData["Town"], 'Type': rawData["Residential Type"]}))
+    ttTrain = pd.DataFrame({'Town': list(ttData['Town'].keys()), 'Type': list(ttData['Type'].keys())})
+
+    # Assign the target (home price) to the Y axis
+    sales = pd.Series(rawData["Sale Amount"])
+
+    # Training the model
+    model.fit(ttData, sales)
+
     # Creating the graph
     fig = plt.figure(figsize=(10, 7))
     ax = fig.add_subplot(111,)
@@ -159,6 +172,18 @@ def pieChart(inputTown):
     plt.savefig("static/pie.jpg", dpi=300)
 
 def histogram(inputTown, inputType):
+    # Get the data from the csv
+    rawData = pd.read_csv("ConneticutResidentialSales2001-2022.csv")
+
+    # Assign the data to the X and Z axis and formatting it for training
+    ttData = ttDataToNums(pd.DataFrame({'Town': rawData["Town"], 'Type': rawData["Residential Type"]}))
+    ttTrain = pd.DataFrame({'Town': list(ttData['Town'].keys()), 'Type': list(ttData['Type'].keys())})
+
+    # Assign the target (home price) to the Y axis
+    sales = pd.Series(rawData["Sale Amount"])
+
+    # Training the model
+    model.fit(ttData, sales)
     # SHOWS THE NUMBER OF TIMES A HOME OF THE SELECTED TYPE HAS BEEN SOLD IN THIS TOWN
     # Creating the graph
     fig = plt.figure(figsize=(10, 7))
